@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Avant Pathfinder × ATOM – Interactive Application</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --avant-blue: #2563eb;
+      --avant-blue-light: #eff6ff;
+      --avant-teal: #06b6d4;
+      --avant-gray-bg: #f3f4f6;
+      --avant-gray-card: #ffffff;
+      --avant-border: #e5e7eb;
+      --text-main: #0f172a;
+      --text-muted: #6b7280;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(to bottom, #ffffff, var(--avant-gray-bg));
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    a {
+      color: var(--avant-blue);
+      text-decoration: none;
+    }
+
+    .app-shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 16px 32px;
+    }
+
+    header {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .hero-title {
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.2;
+      color: #111827;
+    }
+
+    .hero-emblem {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--avant-blue);
+    }
+
+    .hero-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 520px;
+    }
+
+    .badge {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .nav {
+      position: sticky;
+      top: 10px;
+      align-self: flex-start;
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid var(--avant-border);
+      padding: 10px 10px 8px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    .nav-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-item {
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #374151;
+    }
+
+    .nav-item span {
+      max-width: 80%;
+    }
+
+    .nav-item small {
+      font-size: 10px;
+      color: #9ca3af;
+    }
+
+    .nav-item:hover {
+      background: #f3f4f6;
+    }
+
+    .nav-item.active {
+      background: var(--avant-blue-light);
+      color: #1d4ed8;
+      font-weight: 600;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    section.card {
+      background: var(--avant-gray-card);
+      border-radius: 16px;
+      border: 1px solid var(--avant-border);
+      padding: 14px 14px 12px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .card-tagline {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .chip {
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      padding: 4px 8px;
+      font-size: 11px;
+      color: #4b5563;
+      background: #f9fafb;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .metric-card {
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      padding: 8px 9px;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .metric-label {
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      font-size: 9px;
+      color: #6b7280;
+    }
+
+    .metric-value {
+      font-size: 16px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .metric-caption {
+      color: #6b7280;
+      font-size: 11px;
+    }
+
+    .toggle-group {
+      display: inline-flex;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      overflow: hidden;
+      font-size: 10px;
+      background: #f9fafb;
+    }
+
+    .toggle-btn {
+      padding: 4px 8px;
+      border: none;
+      background: transparent;
+      color: #6b7280;
+      cursor: pointer;
+    }
+
+    .toggle-btn.active {
+      background: var(--avant-blue);
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .cols-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .flow-col {
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      padding: 8px 9px;
+      background: #f9fafb;
+      font-size: 11px;
+    }
+
+    .flow-title {
+      font-weight: 600;
+      font-size: 12px;
+      margin-bottom: 4px;
+      color: #111827;
+    }
+
+    .flow-step {
+      color: #4b5563;
+      margin-bottom: 3px;
+    }
+
+    .flow-step span {
+      color: #9ca3af;
+    }
+
+    .tagline-note {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .simple-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 6px;
+      font-size: 11px;
+    }
+
+    .simple-table th,
+    .simple-table td {
+      border: 1px solid #e5e7eb;
+      padding: 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .simple-table th {
+      background: #eff6ff;
+      font-weight: 600;
+      color: #1d4ed8;
+      font-size: 11px;
+    }
+
+    .pill-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .pill-card {
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      padding: 6px 8px;
+      font-size: 11px;
+    }
+
+    .pill-title {
+      font-weight: 600;
+      font-size: 11px;
+      color: #111827;
+      margin-bottom: 2px;
+    }
+
+    .accordion {
+      margin-top: 6px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      overflow: hidden;
+    }
+
+    .accordion-item + .accordion-item {
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .accordion-header {
+      padding: 6px 8px;
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9fafb;
+      cursor: pointer;
+    }
+
+    .accordion-header span {
+      max-width: 85%;
+    }
+
+    .accordion-header small {
+      font-size: 10px;
+      color: #9ca3af;
+    }
+
+    .accordion-body {
+      padding: 6px 8px 8px;
+      background: #ffffff;
+      font-size: 11px;
+      color: #4b5563;
+      display: none;
+    }
+
+    ol {
+      font-size: 11px;
+      color: #374151;
+      margin-left: 16px;
+      margin-top: 4px;
+    }
+
+    ol li {
+      margin-bottom: 3px;
+    }
+
+    .cta-row {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      font-size: 11px;
+    }
+
+    .btn-primary {
+      border-radius: 999px;
+      border: none;
+      background: var(--avant-blue);
+      color: #ffffff;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color: #374151;
+      padding: 5px 10px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .assistant-box {
+      max-height: 180px;
+      overflow-y: auto;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      padding: 6px 8px;
+      background: #f9fafb;
+      font-size: 11px;
+      margin-bottom: 6px;
+    }
+
+    .assistant-input-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .assistant-input {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      padding: 6px 10px;
+      font-size: 11px;
+      outline: none;
+    }
+
+    .note {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    @media (max-width: 840px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .nav {
+        position: static;
+        display: flex;
+        align-items: center;
+        overflow-x: auto;
+        padding: 8px;
+        border-radius: 999px;
+      }
+      .nav-title {
+        display: none;
+      }
+      .nav-list {
+        flex-direction: row;
+        gap: 6px;
+      }
+      .nav-item {
+        white-space: nowrap;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .hero-title {
+        font-size: 20px;
+      }
+      .hero-top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <div class="hero-top">
+        <div>
+          <div class="hero-emblem">Avant Pathfinder × ATOM</div>
+          <div class="hero-title">Agentic AI Co‑Pilot for Trusted Advisors</div>
+          <p class="hero-subtitle">
+            Embedded ATOM services transform Pathfinder’s IQAs, Dynamic Matrices, and Atlas into a
+            real‑time discovery co‑pilot that delivers same‑session provider recommendations, coaching,
+            and customer‑ready artifacts.
+          </p>
+        </div>
+        <div class="badge">Confidential · For Avant Internal Review</div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="nav">
+        <div class="nav-title">Sections</div>
+        <ul class="nav-list" id="navList">
+          <li class="nav-item active" data-target="hero-card">
+            <span>1. Overview</span><small>Impact</small>
+          </li>
+          <li class="nav-item" data-target="experience">
+            <span>2. Pathfinder Today vs ATOM</span><small>Workflow</small>
+          </li>
+          <li class="nav-item" data-target="matrices">
+            <span>3. Dynamic Matrices</span><small>AI-powered</small>
+          </li>
+          <li class="nav-item" data-target="atlas">
+            <span>4. Atlas × ATOM</span><small>Data centers</small>
+          </li>
+          <li class="nav-item" data-target="architecture">
+            <span>5. Architecture</span><small>Technical</small>
+          </li>
+          <li class="nav-item" data-target="roadmap">
+            <span>6. Roadmap</span><small>Phases</small>
+          </li>
+          <li class="nav-item" data-target="roi">
+            <span>7. ROI & Risk</span><small>Value</small>
+          </li>
+          <li class="nav-item" data-target="team">
+            <span>8. Team & Proof</span><small>Execution</small>
+          </li>
+          <li class="nav-item" data-target="assistant">
+            <span>9. Ask ATOM</span><small>Q&A</small>
+          </li>
+        </ul>
+      </nav>
+
+      <main>
+        <!-- Overview -->
+        <section id="hero-card" class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Executive Overview</h2>
+              <p class="card-tagline">
+                ATOM embedded in Pathfinder reduces IQA time, compresses recommendation turnaround
+                from days to minutes, and elevates Trusted Advisors with live coaching and
+                evidence‑backed Dynamic Matrices.
+              </p>
+            </div>
+            <div class="toggle-group" id="stateToggle">
+              <button class="toggle-btn active" data-state="current">Current</button>
+              <button class="toggle-btn" data-state="atom">With ATOM</button>
+            </div>
+          </div>
+
+          <div class="chips">
+            <div class="chip">Trusted Advisor Co‑Pilot</div>
+            <div class="chip">Embedded in Pathfinder</div>
+            <div class="chip">AI‑Powered Dynamic Matrices</div>
+            <div class="chip">Atlas AI Augmentation</div>
+          </div>
+
+          <div class="metrics-grid" id="metricsGrid"></div>
+          <p class="tagline-note">
+            Metrics sourced from the Avant Pathfinder × Antimatter AI ATOM proposal and supporting
+            industry benchmarks (conversion, revenue uplift, and operational efficiency). [file:22][file:38]
+          </p>
+        </section>
+
+        <!-- Experience -->
+        <section id="experience" class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Pathfinder Today vs Pathfinder with ATOM</h2>
+              <p class="card-tagline">
+                A side‑by‑side view of how ATOM reshapes the IQA and recommendation workflow for
+                Trusted Advisors, customers, and engineering. [file:22]
+              </p>
+            </div>
+          </div>
+
+          <div class="cols-2">
+            <div class="flow-col">
+              <div class="flow-title">Current Pathfinder Workflow</div>
+              <div class="flow-step"><span>1.</span> Advisor runs 60+ minute IQA using static forms.</div>
+              <div class="flow-step"><span>2.</span> Submission enters a 3–5 day engineering queue.</div>
+              <div class="flow-step"><span>3.</span> Engineering spends 2–4 hours on manual provider research.</div>
+              <div class="flow-step"><span>4.</span> Static Dynamic Matrices and recommendation docs built post‑call.</div>
+              <div class="flow-step"><span>5.</span> Email back to advisor; context and momentum often lost.</div>
+            </div>
+            <div class="flow-col">
+              <div class="flow-title">Pathfinder with ATOM Co‑Pilot</div>
+              <div class="flow-step"><span>1.</span> IQA responses and call audio stream into ATOM in real time.</div>
+              <div class="flow-step"><span>2.</span> Coaching panel guides questions, positioning, and objections.</div>
+              <div class="flow-step"><span>3.</span> AI‑Powered Dynamic Matrix continuously re‑scores providers.</div>
+              <div class="flow-step"><span>4.</span> Same‑session ranked providers with cited rationale and artifacts.</div>
+              <div class="flow-step"><span>5.</span> Advisor leaves with a finished, customer‑ready deliverable, not a to‑do list.</div>
+            </div>
+          </div>
+
+          <p class="tagline-note">
+            This experience transformation directly addresses advisor friction, customer opacity,
+            and engineering bottlenecks identified in the current‑state analysis. [file:22]
+          </p>
+        </section>
+
+        <!-- Dynamic Matrices -->
+        <section id="matrices" class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">AI‑Powered Dynamic Matrices</h2>
+              <p class="card-tagline">
+                From static scorecards to a living intelligence layer that thinks alongside the
+                advisor during every Pathfinder session. [file:38]
+              </p>
+            </div>
+          </div>
+
+          <p style="font-size:11px;color:#374151;margin-bottom:6px;">
+            Avant’s Dynamic Matrices are one of the most strategically valuable artifacts in
+            Pathfinder today. ATOM turns them into a real‑time decision engine that continuously
+            re‑scores providers as the conversation unfolds. [file:38]
+          </p>
+
+          <table class="simple-table">
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Current State</th>
+                <th>ATOM‑Powered Dynamic Matrices</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Matrix population</td>
+                <td>Manual, post‑call</td>
+                <td>Automated, real‑time population from IQA + call signals</td>
+              </tr>
+              <tr>
+                <td>Provider re‑ranking</td>
+                <td>Static per submission</td>
+                <td>Dynamic, signal‑driven re‑ranking throughout the call</td>
+              </tr>
+              <tr>
+                <td>Scoring transparency</td>
+                <td>Subjective scoring and narrative</td>
+                <td>Cited, evidence‑backed scoring with source links</td>
+              </tr>
+              <tr>
+                <td>Fit rationale</td>
+                <td>Summarized by engineer post‑call</td>
+                <td>AI‑generated rationale grounded in retrieved documentation</td>
+              </tr>
+              <tr>
+                <td>Customer version</td>
+                <td>Manually edited, one‑off</td>
+                <td>Auto‑generated advisor vs customer views (role‑gated)</td>
+              </tr>
+              <tr>
+                <td>Data gaps</td>
+                <td>Often implicit or invisible</td>
+                <td>“Evidence Pending” flags where data is incomplete or unverified</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pill-grid">
+            <div class="pill-card">
+              <div class="pill-title">Auto‑Population</div>
+              <div>
+                As IQA fields are answered, ATOM immediately populates Dynamic Matrices with scored
+                provider comparisons – no manual entry required. [file:38]
+              </div>
+            </div>
+            <div class="pill-card">
+              <div class="pill-title">Real‑Time Re‑Ranking</div>
+              <div>
+                When a customer mentions a compliance constraint, budget ceiling, or deployment
+                preference mid‑call, fit scores are recalculated instantly. [file:38]
+              </div>
+            </div>
+            <div class="pill-card">
+              <div class="pill-title">Explainable Scoring</div>
+              <div>
+                Advisors can expand any cell to see why a provider scores high or low on a given
+                dimension, with direct citations to Pathfinder/Atlas data. [file:38]
+              </div>
+            </div>
+            <div class="pill-card">
+              <div class="pill-title">Dual‑Mode Output</div>
+              <div>
+                ATOM generates both an internal advisor matrix (with confidence flags and coaching
+                notes) and a polished customer‑ready version automatically. [file:38]
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Atlas -->
+        <section id="atlas" class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Atlas × ATOM – AI‑Augmented Data Center Discovery</h2>
+              <p class="card-tagline">
+                Intelligent search for global data center providers powered by ATOM’s requirement‑to‑search
+                translation, geo‑aware ranking, and “Ask Atlas” conversational queries. [file:38]
+              </p>
+            </div>
+          </div>
+
+          <p style="font-size:11px;color:#374151;margin-bottom:6px;">
+            Atlas is Avant’s purpose‑built platform for global data center provider discovery. ATOM
+            turns Atlas from a search interface into a discovery co‑pilot tightly coupled to the
+            Pathfinder IQA workflow. [file:38][web:50]
+          </p>
+
+          <div class="pill-grid">
+            <div class="pill-card">
+              <div class="pill-title">1. Requirement‑to‑Search Translation</div>
+              <div>
+                As advisors capture latency targets, compliance mandates, geographic needs, and power
+                density in IQAs, ATOM converts them into structured Atlas queries automatically. [file:38]
+              </div>
+            </div>
+            <div class="pill-card">
+              <div class="pill-title">2. Geo‑Aware Provider Ranking</div>
+              <div>
+                Providers are ranked not just by feature match, but by regional depth, local
+                certifications, and cross‑border connectivity relevant to each customer. [file:38]
+              </div>
+            </div>
+            <div class="pill-card">
+              <div class="pill-title">3. Constraint‑First Filtering</div>
+              <div>
+                Hard constraints (e.g., GDPR, power density, carrier neutrality) are enforced before
+                any AI scoring, so non‑compliant providers never surface. [file:38]
+              </div>
+            </div>
+            <div class="pill-card">
+              <div class="pill-title">4. “Ask Atlas” Conversational Queries</div>
+              <div>
+                Advisors can ask questions like “Which providers have Tier III+ in Southeast Asia
+                with SOC 2 Type II?” and receive cited, structured responses from Atlas data. [file:38]
+              </div>
+            </div>
+            <div class="pill-card">
+              <div class="pill-title">5. Dynamic Matrix Integration</div>
+              <div>
+                Atlas results feed directly into AI‑Powered Dynamic Matrices for data center categories,
+                enabling side‑by‑side comparisons across power, connectivity, compliance, and commercial
+                terms. [file:38]
+              </div>
+            </div>
+          </div>
+
+          <table class="simple-table" style="margin-top:8px;">
+            <thead>
+              <tr>
+                <th>Phase</th>
+                <th>Atlas × ATOM Capability</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Phase 2 (POC)</td>
+                <td>Include Atlas data center category in pilot IQA (if selected); ingest static Atlas data into ATOM’s RAG knowledge base. [file:38]</td>
+              </tr>
+              <tr>
+                <td>Phase 3</td>
+                <td>Enable “Ask Atlas” natural language queries with geo‑aware ranking during live sessions. [file:38]</td>
+              </tr>
+              <tr>
+                <td>Phase 4</td>
+                <td>Full Atlas integration with real‑time provider data sync; Dynamic Matrix auto‑population for data center categories. [file:38]</td>
+              </tr>
+              <tr>
+                <td>Phase 5</td>
+                <td>Atlas‑powered conversational discovery across all global regions with performance dashboards. [file:38]</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Architecture -->
+        <section id="architecture" class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Pathfinder × ATOM Architecture</h2>
+              <p class="card-tagline">
+                Pathfinder remains the system of record; ATOM adds ingestion, RAG, Fit Scoring,
+                coaching, Dynamic Matrices, and Atlas augmentation. [file:22][file:38]
+              </p>
+            </div>
+          </div>
+
+          <div class="pill-grid">
+            <div class="pill-card">
+              <div class="pill-title">Pathfinder · System of Record</div>
+              <div>
+                Authentication, IQA templates, submissions, routing, and UI remain in Pathfinder.
+                ATOM plugs in via APIs and event streams. [file:22]
+              </div>
+            </div>
+            <div class="pill-card">
+              <div class="pill-title">ATOM Core Services</div>
+              <div>
+                Ingestion & normalization to CanonicalIQA, RAG retrieval, Fit Scoring Engine,
+                coaching engine, and artifact generator. [file:22][file:38]
+              </div>
+            </div>
+            <div class="pill-card">
+              <div class="pill-title">Knowledge & Provider Data</div>
+              <div>
+                Provider capability models, Dynamic Matrices, Atlas provider data, case studies, and
+                compliance information form ATOM’s evidence base. [file:22][file:38]
+              </div>
+            </div>
+            <div class="pill-card">
+              <div class="pill-title">Security & Compliance</div>
+              <div>
+                TLS in transit, encryption at rest, RBAC, audit trails, GDPR/CCPA consent, and PII
+                redaction provide enterprise‑grade safeguards. [file:22]
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion" style="margin-top:8px;">
+            <div class="accordion-item">
+              <div class="accordion-header">
+                <span>Schema‑First, Session‑Centric Design</span><small>CanonicalIQA & sessions</small>
+              </div>
+              <div class="accordion-body">
+                CanonicalIQA and ProviderCapability schemas normalize IQAs across 25+ categories and bind
+                them into session objects containing transcripts, signals, and artifacts. This gives
+                Pathfinder a consistent foundation for Dynamic Matrices, Atlas queries, and coaching. [file:22][file:38]
+              </div>
+            </div>
+            <div class="accordion-item">
+              <div class="accordion-header">
+                <span>Fit Scoring Engine & RAG</span><small>Evidence‑first recommendations</small>
+              </div>
+              <div class="accordion-body">
+                The Fit Scoring Engine continuously scores and re‑ranks providers based on IQA responses,
+                conversation signals, and retrieved provider data. Hybrid vector + metadata retrieval
+                plus a deterministic constraint layer ensure every recommendation is cited and compliant
+                with business rules. [file:22][file:38]
+              </div>
+            </div>
+            <div class="accordion-item">
+              <div class="accordion-header">
+                <span>Coaching Panel & GenUI Components</span><small>Windshield view</small>
+              </div>
+              <div class="accordion-body">
+                The coaching panel surfaces current insights, next questions, objection handling, and
+                sentiment/intent indicators. Controlled GenUI components like ProviderCard,
+                ComparisonTable, and FitMatrixPlot allow Pathfinder to render ATOM outputs safely and
+                consistently. [file:22]
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Roadmap -->
+        <section id="roadmap" class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Implementation Roadmap</h2>
+              <p class="card-tagline">
+                A 16–24 week plan from pilot to full Pathfinder rollout, with acceptance gates at
+                each phase. [file:22][file:38]
+              </p>
+            </div>
+          </div>
+
+          <table class="simple-table">
+            <thead>
+              <tr>
+                <th>Phase</th>
+                <th>Duration</th>
+                <th>Goal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Phase 0 · Discovery & Alignment</td>
+                <td>Week 0–1</td>
+                <td>Confirm integration points, data sources, pilot category, and success metrics. [file:22]</td>
+              </tr>
+              <tr>
+                <td>Phase 1 · Foundation</td>
+                <td>Weeks 1–3</td>
+                <td>Implement CanonicalIQA, provider models, knowledge ingestion, and baseline RAG. [file:22]</td>
+              </tr>
+              <tr>
+                <td>Phase 2 · IQA + Insights MVP (POC)</td>
+                <td>Weeks 3–6</td>
+                <td>Deliver one category end‑to‑end with coaching panel and &lt;5 min recommendation brief generation. [file:22]</td>
+              </tr>
+              <tr>
+                <td>Phase 3 · Live Session & Ask the Matrix/Atlas</td>
+                <td>Weeks 6–10</td>
+                <td>Enable browser live sessions, real‑time sentiment, and conversational Matrix/Atlas queries. [file:22][file:38]</td>
+              </tr>
+              <tr>
+                <td>Phase 4 · Scale to 5 Categories</td>
+                <td>Weeks 10–16</td>
+                <td>Prove repeatability with a schema factory and expanded provider/coaching libraries. [file:22]</td>
+              </tr>
+              <tr>
+                <td>Phase 5 · Full Coverage</td>
+                <td>Weeks 16–24</td>
+                <td>Roll ATOM across all 25+ categories with dashboards and A/B testing. [file:22]</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- ROI -->
+        <section id="roi" class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Business Outcomes, ROI & Risk</h2>
+              <p class="card-tagline">
+                Modeled uplift in revenue and capacity, plus mitigation strategies for AI‑specific
+                risks. [file:22]
+              </p>
+            </div>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-label">IQA Completion Time</div>
+              <div class="metric-value">60 → 20–25 min</div>
+              <div class="metric-caption">Per IQA · ~60% reduction in advisor time. [file:22]</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Turnaround</div>
+              <div class="metric-value">3–5 days → &lt; 5 min</div>
+              <div class="metric-caption">Recommendation latency for a given IQA. [file:22]</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Annual Value (Example)</div>
+              <div class="metric-value">≈ $16.75M</div>
+              <div class="metric-caption">100 reps, 5 IQAs/week, +15% revenue uplift + capacity value. [file:22]</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">3‑Year ROI</div>
+              <div class="metric-value">≈ 1,473%</div>
+              <div class="metric-caption">NPV ≈ $40.5M vs $2–3M implementation + ongoing costs. [file:22]</div>
+            </div>
+          </div>
+
+          <div class="accordion" style="margin-top:8px;">
+            <div class="accordion-item">
+              <div class="accordion-header">
+                <span>Risk: Hallucinations & Trust</span><small>Mitigation: Evidence‑first RAG</small>
+              </div>
+              <div class="accordion-body">
+                All provider claims in Dynamic Matrices and briefs are backed by cited documentation,
+                with an evidence coverage score. Provider facts sit in deterministic tables, and
+                language models are constrained to explain rather than invent them. [file:22][file:38]
+              </div>
+            </div>
+            <div class="accordion-item">
+              <div class="accordion-header">
+                <span>Risk: Adoption & Advisor Fatigue</span><small>Mitigation: Confidence gating</small>
+              </div>
+              <div class="accordion-body">
+                Coaching signals are confidence‑gated and throttle‑controlled, with a “quiet mode”
+                option. Advisors still receive high‑value automated artifacts (briefs, emails, notes)
+                even with fewer on‑screen prompts. [file:22]
+              </div>
+            </div>
+            <div class="accordion-item">
+              <div class="accordion-header">
+                <span>Risk: Data Quality & Integration</span><small>Mitigation: Schema‑first + API‑first</small>
+              </div>
+              <div class="accordion-body">
+                Explicit “unknown” flags, verification timestamps, and an API‑first architecture allow
+                ATOM to adopt Pathfinder and Atlas data as‑is, hardening over time without breaking
+                existing workflows. [file:22][file:38]
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Team -->
+        <section id="team" class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Team & Proof of Execution</h2>
+              <p class="card-tagline">
+                Antimatter AI’s leadership and case studies demonstrate the ability to deliver
+                production‑grade AI in complex, regulated, and high‑traffic environments. [file:22]
+              </p>
+            </div>
+          </div>
+
+          <div class="pill-grid">
+            <div class="pill-card">
+              <div class="pill-title">Matt Bravo · Co‑Founder & CMO</div>
+              <div>
+                Leads product strategy and go‑to‑market for ATOM’s enterprise AI solutions, translating
+                technical capability into measurable business outcomes for clients like Avant. [file:22]
+              </div>
+            </div>
+            <div class="pill-card">
+              <div class="pill-title">Paul Wallace · Co‑Founder & CTO</div>
+              <div>
+                AI systems architect behind ATOM, with experience at ADP, Cognizant, and Lowe’s Digital
+                designing and deploying enterprise‑scale AI systems. [file:22]
+              </div>
+            </div>
+            <div class="pill-card">
+              <div class="pill-title">Ben O’Leary · Strategic Architect</div>
+              <div>
+                Systems and ethical AI architect ensuring ATOM implementations are transparent,
+                auditable, and human‑centered in their design. [file:22]
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion" style="margin-top:8px;">
+            <div class="accordion-item">
+              <div class="accordion-header">
+                <span>Case Study: Clinix AI – Healthcare AI Operating System</span><small>78% time reduction</small>
+              </div>
+              <div class="accordion-body">
+                Clinix AI delivered ambient clinical note generation, AI coding, and EHR integration
+                with HIPAA/SOC2 alignment, reducing documentation time by ~78% per visit. This mirrors
+                the workflow transformation and compliance focus proposed for Pathfinder IQAs. [file:22]
+              </div>
+            </div>
+            <div class="accordion-item">
+              <div class="accordion-header">
+                <span>Case Study: OWASP.org – 2.5M+ Monthly Visitors</span><small>High‑scale platform</small>
+              </div>
+              <div class="accordion-body">
+                The team led a full platform redesign for the OWASP Foundation, achieving 98–99+
+                Lighthouse scores for a site serving 2.5M+ monthly visitors. This demonstrates
+                experience with high‑traffic, multi‑stakeholder rollouts analogous to Pathfinder. [file:22]
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Assistant -->
+        <section id="assistant" class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Ask ATOM About Pathfinder</h2>
+              <p class="card-tagline">
+                Interactive assistant that answers questions about Dynamic Matrices, Atlas, the
+                roadmap, and ROI using the Avant × ATOM proposal as context. [file:22][file:38]
+              </p>
+            </div>
+          </div>
+
+          <div id="assistantTranscript" class="assistant-box">
+            <div><strong>ATOM:</strong> Ask me about Dynamic Matrices, Atlas, phases, or ROI for Pathfinder × ATOM.</div>
+          </div>
+
+          <div class="assistant-input-row">
+            <input
+              id="assistantInput"
+              class="assistant-input"
+              type="text"
+              placeholder="e.g. How do Dynamic Matrices change for advisors?"
+            />
+            <button class="btn-primary" id="assistantSendBtn">Ask ATOM</button>
+          </div>
+
+          <p class="note">
+            Demo mode: responses are generated locally from the Avant Pathfinder × Antimatter AI ATOM
+            proposal and add‑on. Swap this logic for a live ATOM backend when ready. [file:22][file:38]
+          </p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Nav scrolling
+    const navList = document.getElementById('navList');
+    navList.addEventListener('click', (e) => {
+      const li = e.target.closest('.nav-item');
+      if (!li) return;
+      const targetId = li.dataset.target;
+      if (!targetId) return;
+      document.querySelectorAll('.nav-item').forEach((el) => el.classList.remove('active'));
+      li.classList.add('active');
+      const section = document.getElementById(targetId);
+      if (section) {
+        window.scrollTo({
+          top: section.getBoundingClientRect().top + window.scrollY - 10,
+          behavior: 'smooth'
+        });
+      }
+    });
+
+    // Executive metrics toggle
+    const metricsGrid = document.getElementById('metricsGrid');
+    const states = {
+      current: [
+        {
+          label: 'IQA Completion',
+          value: '≈ 60 min',
+          caption: 'Per category; static IQA forms for Trusted Advisors.'
+        },
+        {
+          label: 'Turnaround',
+          value: '3–5 days',
+          caption: 'Engineering queue for provider research and docs.'
+        },
+        {
+          label: 'Conversion',
+          value: 'Baseline',
+          caption: 'No systematic AI‑assisted coaching or matrices.'
+        },
+        {
+          label: 'Advisor Experience',
+          value: 'High friction',
+          caption: 'Manual research, context loss, no real‑time guidance.'
+        }
+      ],
+      atom: [
+        {
+          label: 'IQA Completion',
+          value: '20–25 min',
+          caption: '~60% reduction in qualification time per IQA.'
+        },
+        {
+          label: 'Turnaround',
+          value: '< 5 minutes',
+          caption: 'Same‑session recommendations and artifacts.'
+        },
+        {
+          label: 'Conversion',
+          value: '+ 23%',
+          caption: 'Aligned with conversational AI benchmarks.'
+        },
+        {
+          label: 'Revenue Impact',
+          value: '+ 10–20%',
+          caption: 'Modeled uplift on baseline channel revenue.'
+        }
+      ]
+    };
+
+    function renderMetrics(state) {
+      metricsGrid.innerHTML = '';
+      states[state].forEach((m) => {
+        const div = document.createElement('div');
+        div.className = 'metric-card';
+        div.innerHTML = `
+          <div class="metric-label">${m.label}</div>
+          <div class="metric-value">${m.value}</div>
+          <div class="metric-caption">${m.caption}</div>
+        `;
+        metricsGrid.appendChild(div);
+      });
+    }
+
+    renderMetrics('current');
+
+    document.getElementById('stateToggle').addEventListener('click', (e) => {
+      const btn = e.target.closest('.toggle-btn');
+      if (!btn) return;
+      const state = btn.dataset.state;
+      if (!state) return;
+      document.querySelectorAll('#stateToggle .toggle-btn').forEach((el) => el.classList.remove('active'));
+      btn.classList.add('active');
+      renderMetrics(state);
+    });
+
+    // Accordions
+    document.querySelectorAll('.accordion-header').forEach((header) => {
+      header.addEventListener('click', () => {
+        const body = header.nextElementSibling;
+        if (!body) return;
+        const open = body.style.display === 'block';
+        body.style.display = open ? 'none' : 'block';
+      });
+    });
+
+    // Assistant (local demo responses)
+    const qaPairs = [
+      {
+        q: /dynamic matrix|dynamic matrices|matrix/i,
+        a:
+          "AI‑Powered Dynamic Matrices replace static, post‑call scorecards with a real‑time decision engine. As IQA answers and conversation signals arrive, ATOM auto‑populates and re‑ranks providers across dimensions like compliance, scalability, integration depth, pricing, and geography. Every score is evidence‑backed, dual‑mode advisor vs customer views are generated automatically, and data gaps are flagged as “Evidence Pending” instead of being guessed. [file:38]"
+      },
+      {
+        q: /atlas/i,
+        a:
+          "Atlas is Avant’s global data center provider discovery platform. With ATOM, IQA requirements are translated into structured Atlas queries, results are ranked with geo‑aware logic and hard constraints, and advisors can use “Ask Atlas” natural language questions during live sessions. These results flow directly into Dynamic Matrices for data center categories. [file:38][web:50]"
+      },
+      {
+        q: /5 *min|turnaround|speed|same-?session/i,
+        a:
+          "ATOM reduces Pathfinder recommendation turnaround from 3–5 days to under 5 minutes by ingesting IQA responses and call audio in real time, running RAG over provider and Atlas data, applying Fit Scoring, and generating briefs, emails, notes, and engineering packets as session‑level artifacts. [file:22][file:38]"
+      },
+      {
+        q: /roi|npv|value|uplift/i,
+        a:
+          "In the modeled scenario (100 active advisors, 5 IQAs/week, ~15% revenue uplift), ATOM is projected to deliver ≈$13M in incremental annual revenue plus ≈$3.75M in capacity value, for ≈$16.75M total annual benefit and ≈$40.5M 3‑year NPV—an ROI of roughly 1,473% on a $2–3M implementation. [file:22]"
+      },
+      {
+        q: /risk|hallucination|trust|adoption|fatigue|data quality|integration/i,
+        a:
+          "Key risks include hallucinations, adoption fatigue, data quality, and integration. ATOM mitigates these with evidence‑first RAG and citations, confidence‑gated coaching with quiet mode, schema‑first modeling with explicit unknown flags, and an API‑first architecture that matches Pathfinder’s existing systems. [file:22][file:38]"
+      },
+      {
+        q: /phase|roadmap|timeline/i,
+        a:
+          "The roadmap spans Phases 0–5 over roughly 16–24 weeks: Phase 0–1 for discovery and schema/RAG foundation, Phase 2 for an IQA + Insights MVP in one category, Phase 3 for live sessions and Ask the Matrix/Atlas, Phase 4 for scaling to 5 categories, and Phase 5 for platform‑wide rollout with dashboards and testing. [file:22][file:38]"
+      }
+    ];
+
+    function answerFromLocalDeck(query) {
+      for (const pair of qaPairs) {
+        if (pair.q.test(query)) return pair.a;
+      }
+      return (
+        "ATOM for Pathfinder is an embedded agentic AI co‑pilot that transforms IQAs, Dynamic Matrices, " +
+        "and Atlas into a real‑time, evidence‑backed decision engine. It reduces IQA time, delivers same‑session " +
+        "provider recommendations, and supports advisors with live coaching and auto‑generated artifacts grounded " +
+        "in Avant’s provider and Atlas data. [file:22][file:38]"
+      );
+    }
+
+    const assistantInput = document.getElementById('assistantInput');
+    const assistantSendBtn = document.getElementById('assistantSendBtn');
+    const assistantTranscript = document.getElementById('assistantTranscript');
+
+    function appendMessage(role, text) {
+      const div = document.createElement('div');
+      div.style.marginTop = '4px';
+      div.innerHTML = '<strong>' + role + ':</strong> ' + text;
+      assistantTranscript.appendChild(div);
+      assistantTranscript.scrollTop = assistantTranscript.scrollHeight;
+    }
+
+    assistantSendBtn.addEventListener('click', () => {
+      const q = assistantInput.value.trim();
+      if (!q) return;
+      appendMessage('You', q);
+      assistantInput.value = '';
+      setTimeout(() => {
+        const a = answerFromLocalDeck(q);
+        appendMessage('ATOM', a);
+      }, 220);
+    });
+
+    assistantInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') assistantSendBtn.click();
+    });
+  </script>
+</body>
+</html>
